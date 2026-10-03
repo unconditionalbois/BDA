@@ -1,0 +1,122 @@
+1
+
+cd C:\BDA
+New-Item -ItemType Directory -Force -Path C:\BDA\input | Out-Null
+Remove-Item -Recurse -Force C:\BDA\output -ErrorAction SilentlyContinue
+[System.IO.File]::WriteAllLines("C:\BDA\input\sample.txt", @("Hello Hadoop World", "Hadoop is a Big Data framework"))
+hadoop jar C:\hadoop\share\hadoop\mapreduce\hadoop-mapreduce-examples-3.3.6.jar grep C:\BDA\input C:\BDA\output "H[a-z]+"
+
+"STANDALONE MODE:"
+Get-Content C:\BDA\output\part-r-00000
+
+"`nPSEUDO-DISTRIBUTED MODE:"
+"jps Output:"
+jps | Select-String "NameNode|DataNode|ResourceManager|NodeManager"
+"HDFS Output:"
+hdfs dfs -ls /user
+
+"`nFULLY DISTRIBUTED MODE:"
+@"
+Master Machine 
+192.168.1.100 
+| 
+|-- NameNode 
+|-- ResourceManager 
+| 
+|-- Worker 1 
+|   192.168.1.101 
+|   |-- DataNode 
+|   |-- NodeManager 
+| 
+|-- Worker 2 
+    192.168.1.102 
+    |-- DataNode 
+    |-- NodeManager
+"@
+
+
+2
+cd C:\BDA
+[System.IO.File]::WriteAllLines("C:\BDA\students.txt", @("Name,Age,City", "Ravi,21,Chennai", "Priya,22,Mumbai", "Karthik,20,Delhi"))
+
+hdfs dfs -mkdir -p /user/student/data
+hdfs dfs -put -f C:\BDA\students.txt /user/student/data/
+Get-Content C:\BDA\students.txt
+hdfs dfs -ls /user/student/data/
+hdfs dfs -du /user/student/data
+
+hdfs dfs -cat /user/student/data/students.txt
+hdfs dfs -get -f /user/student/data/students.txt C:\BDA\downloaded_students.txt
+Get-Content C:\BDA\downloaded_students.txt
+hdfs dfs -cp /user/student/data/students.txt /user/student/backup.txt
+hdfs dfs -ls /user/student
+hdfs dfs -ls -R /user/student
+hdfs dfs -df -h /
+
+hdfs dfs -rm /user/student/backup.txt
+hdfs dfs -rm -r /user/student/data
+hdfs dfs -ls /user/student
+
+
+3
+cd C:\BDA\BDA_Ex03
+$dir = (Get-ChildItem -Recurse -Filter "mapper.py").DirectoryName | Select-Object -First 1
+if ($dir) { cd $dir }
+
+[System.IO.File]::WriteAllLines("$PWD\input.txt", @("HINDUSTHAN COLLEGE OF ARTS AND SCIENCE DEPARTMENT OF COMPUTER APPLICATIONS(PG)"))
+
+Get-Content input.txt | python mapper.py
+Get-Content input.txt | python mapper.py | Sort-Object | python reducer.py4
+cd C:\BDA\BDA_Ex04
+Get-Content weather.csv | python weather_mapper.py | Sort-Object | python weather_reducer.py
+
+4
+
+cd C:\BDA\BDA_Ex04
+Get-Content weather.csv | python weather_mapper.py | Sort-Object | python weather_reducer.py
+
+5
+
+cd C:\BDA\BDA_Ex05
+$dir = (Get-ChildItem -Recurse -Filter "*mapper*.py").DirectoryName | Select-Object -First 1
+if ($dir) { cd $dir }
+
+$map = (Get-ChildItem -Filter "*mapper*.py" | Select-Object -First 1).Name
+$red = (Get-ChildItem -Filter "*reducer*.py" | Select-Object -First 1).Name
+$inp = (Get-ChildItem -Include *.txt, *.csv -Recurse | Where-Object { $_.Name -notmatch "mapper|reducer" } | Select-Object -First 1).Name
+
+Get-Content $inp | python $map | Sort-Object | python $red
+
+6
+
+cd C:\BDA
+Expand-Archive -Force -Path C:\BDA\BDA_Ex06.zip -DestinationPath C:\BDA\BDA_Ex06 -ErrorAction SilentlyContinue
+cd C:\BDA\BDA_Ex06
+$dir = (Get-ChildItem -Recurse -Filter "*mapper*.py").DirectoryName | Select-Object -First 1
+if ($dir) { cd $dir }
+
+$map = (Get-ChildItem -Filter "*mapper*.py" | Select-Object -First 1).Name
+$red = (Get-ChildItem -Filter "*reducer*.py" | Select-Object -First 1).Name
+$inp = (Get-ChildItem -Path . -File | Where-Object { $_.Extension -in ".txt", ".csv" -and $_.Name -notmatch "mapper|reducer" } | Select-Object -First 1).Name
+
+Get-Content $inp | python $map | Sort-Object | python $red
+
+7
+
+cd C:\BDA
+Expand-Archive -Force -Path C:\BDA\BDA_Ex07.zip -DestinationPath C:\BDA\BDA_Ex07 -ErrorAction SilentlyContinue
+cd C:\BDA\BDA_Ex07
+$dir = (Get-ChildItem -Recurse -Filter "*mapper*.py").DirectoryName | Select-Object -First 1
+if ($dir) { cd $dir }
+
+$map = (Get-ChildItem -Filter "*mapper*.py" | Select-Object -First 1).Name
+$red = (Get-ChildItem -Filter "*reducer*.py" | Select-Object -First 1).Name
+$inp = (Get-ChildItem -Path . -File | Where-Object { $_.Extension -in ".txt", ".csv" -and $_.Name -notmatch "mapper|reducer" } | Select-Object -First 1).Name
+
+Get-Content $inp | python $map | Sort-Object | python $red
+
+
+8
+
+
+
