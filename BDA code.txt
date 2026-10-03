@@ -118,5 +118,17 @@ Get-Content $inp | python $map | Sort-Object | python $red
 
 8
 
+cd C:\BDA
+Expand-Archive -Force -Path C:\BDA\BDA_Ex08.zip -DestinationPath C:\BDA\BDA_Ex08 -ErrorAction SilentlyContinue
+cd C:\BDA\BDA_Ex08
+$dir = (Get-ChildItem -Recurse -Filter "*mapper*.py").DirectoryName | Select-Object -First 1
+if ($dir) { cd $dir }
+
+$map = (Get-ChildItem -Filter "*mapper*.py" | Select-Object -First 1).Name
+$red = (Get-ChildItem -Filter "*reducer*.py" | Select-Object -First 1).Name
+$inp = (Get-ChildItem -Path . -File | Where-Object { $_.Extension -in ".txt", ".csv", ".log" -and $_.Name -notmatch "mapper|reducer" } | Select-Object -First 1).Name
+
+Get-Content $inp | python $map | Sort-Object | python $red
+
 
 
